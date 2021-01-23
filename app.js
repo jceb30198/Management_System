@@ -11,3 +11,16 @@ const connection = mysql.createConnection({
     password: "password",
     database: "employee_managerDB"
 })
+
+connection.connect((err)=> {
+    if (err) throw err;
+    console.log("Connected\n");
+})
+
+// Add department/role/employee
+
+// View department/role/employee
+
+// Remove department/role/employee
+
+// Update roles of employees
