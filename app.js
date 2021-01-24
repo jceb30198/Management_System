@@ -40,23 +40,22 @@ connection.connect((err)=> {
                 addRole();
                 break;
             case "View Department(s)":
-
-                
+                viewDepartment();
                 break;
             case "View Employee(s)":
-                
+                viewEmployee();
                 break;
             case "View Role(s)":
-                
+                viewRole();
                 break;
             case "Remove Department":
-                
+                removeDepartment();
                 break;
             case "Remove Employee":
-                
+                removeEmployee();
                 break;
             case "Remove Role":
-                
+                removeRole();
                 break;
             default:
                 console.log(`Goodbye\n--------------------------------------------------`);
@@ -153,6 +152,24 @@ function addRole() {
     })
 };
 
+
+function viewDepartment() {
+   let query = "SELECT * FROM department"
+   connection.query(query, (err, res) => {
+       if (err) throw err;
+       console.table(res);
+       console.log("--------------------------------------------------");
+       begin();
+    })
+};
+
+function viewEmployee() {
+    let query = "SELECT * FROM employee"; // Do join here
+    connection.query(query, (err,res) => {
+        if (err) throw err;
+        console.table(res)
+    })
+}
 /*
 What would you like to do? {
     Add department/role/employee
