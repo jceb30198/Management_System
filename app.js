@@ -12,7 +12,7 @@ const connection = mysql.createConnection({
     database: "employee_managerDB"
 });
 
-connection.connect((err)=> {
+connection.connect((err) => {
     if (err) {
         throw err;
     }
@@ -22,7 +22,9 @@ connection.connect((err)=> {
     }
 });
 
- function begin() {
+const line = "--------------------------------------------------";
+
+function begin() {
     inquirer.prompt({
         type: "list",
         name: "task",
@@ -58,7 +60,7 @@ connection.connect((err)=> {
                 removeRole();
                 break;
             default:
-                console.log(`Goodbye\n--------------------------------------------------`);
+                console.log(`Goodbye\n${line}`);
                 connection.end();
         };
     })
@@ -71,9 +73,9 @@ function addDepartment() {
         message: "What is the name of the new department?"
     }).then((res) => {
         let query = "INSERT INTO department SET ?";
-        connection.query(query, {name: res.newDepartment}, (err,res) => {
+        connection.query(query, { name: res.newDepartment }, (err, res) => {
             if (err) throw err;
-            console.log(`Department Added\n--------------------------------------------------`);
+            console.log(`Department Added\n${line}`);
             begin();
         })
     })
@@ -113,7 +115,7 @@ function addEmployee() {
             manager_id: res.managerID
         }, (err, res) => {
             if (err) throw err;
-            console.log(`Employee Added\n--------------------------------------------------`)
+            console.log(`Employee Added\n${line}`)
             begin();
         })
     })
@@ -146,7 +148,7 @@ function addRole() {
             department_id: res.departmentID
         }, (err, res) => {
             if (err) throw err;
-            console.log(`Role Added\n--------------------------------------------------`);
+            console.log(`Role Added\n${line}`);
             begin();
         })
     })
@@ -154,31 +156,33 @@ function addRole() {
 
 
 function viewDepartment() {
-   let query = "SELECT * FROM department"
-   connection.query(query, (err, res) => {
-       if (err) throw err;
-       console.table(res);
-       console.log("--------------------------------------------------");
-       begin();
+    let query = "SELECT * FROM department"
+    connection.query(query, (err, res) => {
+        if (err) throw err;
+        console.table(res);
+        console.log(line);
+        begin();
     })
 };
 
 function viewEmployee() {
-    let query = "SELECT * FROM employee"; // Do join here
-    connection.query(query, (err,res) => {
+    let query = "SELECT employee.first_name, employee.last_name, employee.role_id, role.title, role.salary FROM employee INNER JOIN role ON employee.role_id = role.id"; // Do join here
+    connection.query(query, (err, res) => {
         if (err) throw err;
-        console.table(res)
+        console.table(res);
+        console.log(line)
+        begin();
     })
 }
 /*
 What would you like to do? {
     Add department/role/employee
-    
+
     View department/role/employee
-    
+
     Remove department/role/employee
-    
+
     Update roles of employees
 }
-    
+
     */
