@@ -13,13 +13,10 @@ const connection = mysql.createConnection({
 });
 
 connection.connect((err) => {
-    if (err) {
-        throw err;
-    }
-    else {
-        console.log("Connected\n");
-        begin();
-    }
+    if (err) throw err;
+    console.log("Connected\n");
+    console.log(line);
+    begin();
 });
 
 const line = "--------------------------------------------------";
@@ -69,11 +66,11 @@ function begin() {
 function addDepartment() {
     inquirer.prompt({
         type: "input",
-        name: "newDepartment",
+        name: "name",
         message: "What is the name of the new department?"
     }).then((res) => {
         let query = "INSERT INTO department SET ?";
-        connection.query(query, { name: res.newDepartment }, (err, res) => {
+        connection.query(query, { name: res.name }, (err, res) => {
             if (err) throw err;
             console.log(`Department Added\n${line}`);
             begin();
@@ -185,7 +182,15 @@ function viewRole() {
     })
 };
 
-
+function removeDepartment() {
+    let query = "DELETE FROM department WHERE ?";
+    connection.query(query, (err, res) => {
+        if (err) throw (err);
+        //console.log(`Department Removed ${line}`);
+        console.log(res.affectedRows);
+        begin();
+    })
+}
 /*
 What would you like to do? {
     Add department/role/employee
