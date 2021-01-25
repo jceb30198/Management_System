@@ -166,13 +166,17 @@ function viewDepartment() {
 };
 
 function viewEmployee() {
-    let query = "SELECT employee.first_name, employee.last_name, employee.role_id, role.title, role.salary FROM employee INNER JOIN role ON employee.role_id = role.id"; // Do join here
+    let query = "SELECT employee.first_name, employee.last_name, department.name, role.title, role.salary FROM employee INNER JOIN role ON employee.role_id = role.id INNER JOIN department ON role.department_id = department.id"; // Do join here
     connection.query(query, (err, res) => {
         if (err) throw err;
         console.table(res);
         console.log(line)
         begin();
     })
+};
+
+function viewRole() {
+    let query = "";
 }
 /*
 What would you like to do? {
