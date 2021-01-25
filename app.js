@@ -156,7 +156,7 @@ function addRole() {
 
 
 function viewDepartment() {
-    let query = "SELECT * FROM department"
+    let query = "SELECT department.name AS Department FROM department"
     connection.query(query, (err, res) => {
         if (err) throw err;
         console.table(res);
@@ -166,7 +166,7 @@ function viewDepartment() {
 };
 
 function viewEmployee() {
-    let query = "SELECT employee.first_name, employee.last_name, department.name, role.title, role.salary FROM employee INNER JOIN role ON employee.role_id = role.id INNER JOIN department ON role.department_id = department.id"; // Do join here
+    let query = "SELECT employee.first_name AS First_Name, employee.last_name AS Last_Name, department.name AS Department, role.title AS Title, role.salary AS Salary FROM employee INNER JOIN role ON employee.role_id = role.id INNER JOIN department ON role.department_id = department.id";
     connection.query(query, (err, res) => {
         if (err) throw err;
         console.table(res);
@@ -176,8 +176,16 @@ function viewEmployee() {
 };
 
 function viewRole() {
-    let query = "";
-}
+    let query = "SELECT role.title AS Title, role.salary AS Salary, department.name AS Department FROM role INNER JOIN department ON role.department_id = department.id";
+    connection.query(query, (err, res) => {
+        if (err) throw err;
+        console.table(res);
+        console.log(line);
+        begin();
+    })
+};
+
+
 /*
 What would you like to do? {
     Add department/role/employee
@@ -188,5 +196,4 @@ What would you like to do? {
 
     Update roles of employees
 }
-
-    */
+*/
