@@ -134,7 +134,7 @@ const addRoleArr = [
         name: "departmentID",
         message: "Please enter this role's department ID:"
     }
-]
+];
 
 function addRole() {
     inquirer.prompt(addRoleArr).then((res) => {
@@ -183,12 +183,46 @@ function viewRole() {
 };
 
 function removeDepartment() {
-    let query = "DELETE FROM department WHERE ?";
-    connection.query(query, (err, res) => {
-        if (err) throw (err);
-        //console.log(`Department Removed ${line}`);
-        console.log(res.affectedRows);
-        begin();
+    let sql = "SELECT * FROM department";
+    connection.query(sql, (err, res) => {
+        const deleteDepArr = [];
+        for (let i = 0; i < res.length; i++) {
+            deleteDepArr.push(res[i].name);
+        };
+        inquirer.prompt({
+            type: "list",
+            name: "name",
+            message: "Which department would you like to delete?",
+            choices: deleteDepArr
+        }).then((data) => {
+            let query = "DELETE FROM department WHERE department.name = ?";
+            connection.query(query, data.name, (err, data) => {
+                if (err) throw (err);
+                console.log(`Department Removed\n${line}`);
+                begin();
+            });
+        });
+    });
+};
+
+function removeEmployee() {
+    let sql = "SELECT employee.first_name, employee.last_name FROM employee";
+    connection.query(sql, (err, res) => {
+        const deleteEmployeeArr = [];
+        for (let i = 0; i < res.length; i++) {
+            let name = res[i].first_name + " " + res[i].last_name;
+            deleteEmployeeArr.push(name);
+        };
+        console.log(deleteEmployeeArr);
+        inquirer.prompt({
+            type: "list",
+            name: "name",
+            message: "Which employee would you like to delete?",
+            choices: deleteEmployeeArr
+        }).then((data) => {
+            let query = "DELETE FROM employee WHERE first_name = ? + last_name = ?";
+            connection.query(query, res.name)
+        })
     })
 }
 /*
@@ -200,5 +234,7 @@ What would you like to do? {
     Remove department/role/employee
 
     Update roles of employees
+
+    console.log(res[0].Title); This is how to get info from res
 }
 */
