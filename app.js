@@ -213,15 +213,18 @@ function removeEmployee() {
             let name = res[i].first_name + " " + res[i].last_name;
             deleteEmployeeArr.push(name);
         };
-        console.log(deleteEmployeeArr);
         inquirer.prompt({
             type: "list",
             name: "name",
             message: "Which employee would you like to delete?",
             choices: deleteEmployeeArr
         }).then((data) => {
-            let query = "DELETE FROM employee WHERE first_name = ? + last_name = ?";
-            connection.query(query, res.name)
+            let query = "DELETE FROM employee WHERE (employee.first_name, employee.last_name) = (?)";
+            let splitArr = [(data.name.split(" "))]; 
+            connection.query(query, splitArr, (err, res) => {
+                if (err) throw err;
+                begin();
+            })
         })
     })
 }
