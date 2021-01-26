@@ -196,7 +196,7 @@ function removeDepartment() {
             choices: deleteDepArr
         }).then((data) => {
             let query = "DELETE FROM department WHERE department.name = ?";
-            connection.query(query, data.name, (err, data) => {
+            connection.query(query, data.name, (err, response) => {
                 if (err) throw (err);
                 console.log(`Department Removed\n${line}`);
                 begin();
@@ -221,13 +221,39 @@ function removeEmployee() {
         }).then((data) => {
             let query = "DELETE FROM employee WHERE (employee.first_name, employee.last_name) = (?)";
             let splitArr = [(data.name.split(" "))]; 
-            connection.query(query, splitArr, (err, res) => {
+            connection.query(query, splitArr, (err, response) => {
                 if (err) throw err;
+                console.log(`Employee Removed\n${line}`)
                 begin();
             })
         })
     })
-}
+};
+
+function removeRole() {
+    let sql = "SELECT role.title FROM role";
+    connection.query(sql, (err,res) => {
+        const deleteRoleArr = [];
+        for (let i = 0; i < res.length; i++) {
+            deleteRoleArr.push(res[i].title);
+        };
+        inquirer.prompt({
+            type: "list",
+            name: "title",
+            message: "Which role would you like to delete?",
+            choices: deleteRoleArr
+        }).then((data) => {
+            let query = "DELETE FROM role WHERE role.title = ?";
+            connection.query(query, data.title, (err, response) => {
+                if (err) throw err;
+                console.log(`Role Removed\n${line}`);
+                begin();
+            })
+        });
+    });
+};
+
+
 /*
 What would you like to do? {
     Add department/role/employee
