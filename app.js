@@ -26,7 +26,7 @@ function begin() {
         type: "list",
         name: "task",
         message: "What do you need help with?",
-        choices: ["Add Department", "Add Employee", "Add Role", "View Department(s)", "View Employee(s)", "View Role(s)", "Remove Department", "Remove Employee", "Remove Role", "Shutdown"]
+        choices: ["Add Department", "Add Employee", "Add Role", "View Department(s)", "View or Update Employee(s)", "View Role(s)", "Remove Department", "Remove Employee", "Remove Role", "Shutdown"]
     }).then((res) => {
         switch (res.task) {
             case "Add Department":
@@ -41,7 +41,7 @@ function begin() {
             case "View Department(s)":
                 viewDepartment();
                 break;
-            case "View Employee(s)":
+            case "View or Update Employee(s)":
                 viewEmployee();
                 break;
             case "View Role(s)":
@@ -163,13 +163,25 @@ function viewDepartment() {
 };
 
 function viewEmployee() {
-    let query = "SELECT employee.first_name AS First_Name, employee.last_name AS Last_Name, department.name AS Department, role.title AS Title, role.salary AS Salary FROM employee INNER JOIN role ON employee.role_id = role.id INNER JOIN department ON role.department_id = department.id";
-    connection.query(query, (err, res) => {
-        if (err) throw err;
-        console.table(res);
-        console.log(line)
-        begin();
-    })
+    inquirer.prompt({
+        type: "list",
+        name: "choice",
+        message: "Would you like to view or update employees?",
+        choices: ["View", "Update"]
+    }).then((res) => {
+        if (res.choice === "View") {
+            let query = "SELECT employee.first_name AS First_Name, employee.last_name AS Last_Name, department.name AS Department, role.title AS Title, role.salary AS Salary FROM employee INNER JOIN role ON employee.role_id = role.id INNER JOIN department ON role.department_id = department.id";
+            connection.query(query, (err, response) => {
+                if (err) throw err;
+                console.table(response);
+                console.log(line)
+                begin();
+            });
+        }
+        else {
+            updateEmployee();
+        }
+    });
 };
 
 function viewRole() {
@@ -254,16 +266,31 @@ function removeRole() {
 };
 
 
-/*
-What would you like to do? {
-    Add department/role/employee
-
-    View department/role/employee
-
-    Remove department/role/employee
-
-    Update roles of employees
-
-    console.log(res[0].Title); This is how to get info from res
-}
-*/
+function updateEmployee() {
+    let sql = "SELECT employee.first_name, employee.last_name, role.title FROM employee INNER JOIN role ON employee.role_id = role.id";
+    connection.query(sql, (err, res) => {
+        const updateEmployeeArr = [];
+        const updateRoleArr = [];
+        for (let i = 0; i < res.length; i++) {
+            let name = res[i].first_name + " " + res[i].last_name;
+            updateRoleArr.push(res[i].title);
+            updateEmployeeArr.push(name);
+        }
+        console.log(updateRoleArr);
+        inquirer.prompt([
+        {
+            type: "list",
+            name: "name",
+            message: "Which employee would you like to update?",
+            choices: updateEmployeeArr
+        },
+        {
+            tpye: "list",
+            name: "title",
+            message: "Which role would you like the employee to have now?",
+            choices: updateRoleArr
+        }
+        ]).then((data) => {
+            begin();
+    })
+})};
