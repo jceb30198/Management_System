@@ -170,7 +170,7 @@ function viewEmployee() {
         choices: ["View", "Update"]
     }).then((res) => {
         if (res.choice === "View") {
-            let query = "SELECT employee.first_name AS First_Name, employee.last_name AS Last_Name, department.name AS Department, role.title AS Title, role.salary AS Salary FROM employee LEFT JOIN role ON employee.role_id = role.id INNER JOIN department ON role.department_id = department.id";
+            let query = "SELECT employee.first_name AS First_Name, employee.last_name AS Last_Name, department.name AS Department, role.title AS Title, role.salary AS Salary FROM employee LEFT JOIN role ON employee.role_id = role.id LEFT JOIN department ON role.department_id = department.id";
             connection.query(query, (err, response) => {
                 if (err) throw err;
                 console.table(response);
@@ -185,7 +185,7 @@ function viewEmployee() {
 };
 
 function viewRole() {
-    let query = "SELECT role.title AS Title, role.salary AS Salary, department.name AS Department FROM role INNER JOIN department ON role.department_id = department.id";
+    let query = "SELECT role.title AS Title, role.salary AS Salary, department.name AS Department FROM role LEFT JOIN department ON role.department_id = department.id";
     connection.query(query, (err, res) => {
         if (err) throw err;
         console.table(res);
@@ -267,10 +267,11 @@ function removeRole() {
 
 
 function updateEmployee() {
-    let sql = "SELECT * FROM employee RIGHT JOIN role ON employee.role_id = role.id";
+    let sql = "SELECT * FROM employee LEFT JOIN role ON employee.role_id = role.id";
     connection.query(sql, (err, res) => {
         const updateEmployeeArr = [];
         const updateRoleArr = [];
+        console.log(res);
         for (let i = 0; i < res.length; i++) {
             let name = res[i].first_name + " " + res[i].last_name;
             updateRoleArr.push(res[i].title);
@@ -301,7 +302,6 @@ function updateEmployee() {
                     dataArr.splice(0, 1, res[i].id);
                 };
             };
-            console.log(dataArr);
             connection.query(query, dataArr,(err, response) => {
                 if (err) throw err;
                 console.log(`Role Updated\n${line}`);
