@@ -267,7 +267,7 @@ function removeRole() {
 
 
 function updateEmployee() {
-    let sql = "SELECT * FROM employee LEFT JOIN role ON employee.role_id = role.id";
+    let sql = "SELECT * FROM employee INNER JOIN role ON employee.role_id = role.id";
     connection.query(sql, (err, res) => {
         const updateEmployeeArr = [];
         const updateRoleArr = [];
