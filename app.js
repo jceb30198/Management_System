@@ -170,7 +170,7 @@ function viewEmployee() {
         choices: ["View", "Update"]
     }).then((res) => {
         if (res.choice === "View") {
-            let query = "SELECT employee.first_name AS First_Name, employee.last_name AS Last_Name, department.name AS Department, role.title AS Title, role.salary AS Salary FROM employee INNER JOIN role ON employee.role_id = role.id INNER JOIN department ON role.department_id = department.id";
+            let query = "SELECT employee.first_name AS First_Name, employee.last_name AS Last_Name, department.name AS Department, role.title AS Title, role.salary AS Salary FROM employee LEFT JOIN role ON employee.role_id = role.id INNER JOIN department ON role.department_id = department.id";
             connection.query(query, (err, response) => {
                 if (err) throw err;
                 console.table(response);
@@ -267,7 +267,7 @@ function removeRole() {
 
 
 function updateEmployee() {
-    let sql = "SELECT employee.first_name, employee.last_name, role.title FROM employee INNER JOIN role ON employee.role_id = role.id";
+    let sql = "SELECT * FROM employee RIGHT JOIN role ON employee.role_id = role.id";
     connection.query(sql, (err, res) => {
         const updateEmployeeArr = [];
         const updateRoleArr = [];
@@ -275,22 +275,38 @@ function updateEmployee() {
             let name = res[i].first_name + " " + res[i].last_name;
             updateRoleArr.push(res[i].title);
             updateEmployeeArr.push(name);
-        }
-        console.log(updateRoleArr);
+        };
         inquirer.prompt([
-        {
-            type: "list",
-            name: "name",
-            message: "Which employee would you like to update?",
-            choices: updateEmployeeArr
-        },
-        {
-            tpye: "list",
-            name: "title",
-            message: "Which role would you like the employee to have now?",
-            choices: updateRoleArr
-        }
+            {
+                type: "list",
+                name: "name",
+                message: "Which employee would you like to update?",
+                choices: updateEmployeeArr
+            },
+            {
+                type: "list",
+                name: "title",
+                message: "Which role would you like the employee to have now?",
+                choices: updateRoleArr
+            }
         ]).then((data) => {
-            begin();
-    })
-})};
+            let query = "UPDATE employee SET employee.role_id = ? WHERE employee.first_name = ? AND employee.last_name = ?";
+            let dataArr = [data.title];
+            let nameSplit = data.name.split(" ");
+            for(let i = 0; i < nameSplit.length; i++) {
+                dataArr.push(nameSplit[i]);
+            };
+            for(let i = 0; i < res.length; i++) {
+                if(data.title === res[i].title) {
+                    dataArr.splice(0, 1, res[i].id);
+                };
+            };
+            console.log(dataArr);
+            connection.query(query, dataArr,(err, response) => {
+                if (err) throw err;
+                console.log(`Role Updated\n${line}`);
+                begin();
+            });
+        });
+    });
+};
