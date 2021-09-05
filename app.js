@@ -271,7 +271,6 @@ function updateEmployee() {
     connection.query(sql, (err, res) => {
         const updateEmployeeArr = [];
         const updateRoleArr = [];
-        console.log(res);
         for (let i = 0; i < res.length; i++) {
             let name = res[i].first_name + " " + res[i].last_name;
             updateRoleArr.push(res[i].title);
